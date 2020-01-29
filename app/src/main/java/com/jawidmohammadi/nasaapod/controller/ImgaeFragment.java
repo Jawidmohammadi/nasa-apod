@@ -1,7 +1,6 @@
 package com.jawidmohammadi.nasaapod.controller;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,21 +8,15 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.jawidmohammadi.nasaapod.BuildConfig;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jawidmohammadi.nasaapod.R;
 import com.jawidmohammadi.nasaapod.model.Apod;
-import com.jawidmohammadi.nasaapod.service.ApodService;
 import com.jawidmohammadi.nasaapod.viewmodel.MainViewModel;
-import java.io.IOException;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ImgaeFragment extends Fragment {
 
@@ -32,11 +25,16 @@ public class ImgaeFragment extends Fragment {
 
     private WebView contentView;
     private MainViewModel viewModel;
+    private ProgressBar loading;
+    private FloatingActionButton calendar;
+
+
     public View onCreateView(@NonNull LayoutInflater inflater,
             ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_image, container, false);
+        loading = root.findViewById(R.id.loading);
+        calendar = root.findViewById(R.id.calendar);
         setupWebView(root);
-
         return root;
     }
 
@@ -44,7 +42,8 @@ public class ImgaeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
-
+        viewModel.getApod().observe(getViewLifecycleOwner(),
+            (Apod apod) -> contentView.loadUrl(apod.getUrl()));
     }
 
     private void setupWebView(View root) {
@@ -57,7 +56,8 @@ public class ImgaeFragment extends Fragment {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                //TODO Update view to indicate that load is complete.
+                loading.setVisibility(View.GONE);
+                
             }
         });
         WebSettings settings = contentView.getSettings();
@@ -67,7 +67,6 @@ public class ImgaeFragment extends Fragment {
         settings.setDisplayZoomControls(false);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
-        new Retriever().start();
     }
 
 }
