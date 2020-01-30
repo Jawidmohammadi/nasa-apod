@@ -24,15 +24,22 @@ public class MainViewModel extends AndroidViewModel {
 
   private Date apodDate;
   private MutableLiveData<Apod> apod;
+private MutableLiveData<Throwable> throwable;
 
   public MainViewModel(@NonNull Application application) {
     super(application);
-    setApodDate(new Date()); //TODO Investigate adjustment for Nasa Apod-relevant time zone.
     apod = new MutableLiveData<>();
+    throwable = new MutableLiveData<>();
+    setApodDate(new Date()); //TODO Investigate adjustment for Nasa Apod-relevant time zone.
+
   }
 
   public LiveData<Apod> getApod() {
     return apod;
+  }
+
+  public LiveData<Throwable> getThrowable() {
+    return throwable;
   }
 
   public void setApodDate(Date date){
@@ -63,11 +70,11 @@ public class MainViewModel extends AndroidViewModel {
           Apod apod = response.body();
           MainViewModel.this.apod.postValue(apod);
         } else {
-          Log.e("ApodService", response.message());
+          throw new RuntimeException(response.message());
         }
-      } catch (IOException e) {
-        e.printStackTrace();
+      } catch (IOException | RuntimeException e) {
         Log.e("ApodService", e.getMessage(), e);
+        throwable.postValue(e);
 
       }
     }
