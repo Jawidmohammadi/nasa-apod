@@ -1,15 +1,12 @@
 package com.jawidmohammadi.nasaapod.controller;
 
-import android.icu.text.IDNA.Info;
 import android.os.Bundle;
-import android.provider.CalendarContract.CalendarAlerts;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -23,11 +20,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jawidmohammadi.nasaapod.R;
-import com.jawidmohammadi.nasaapod.model.Apod;
+import com.jawidmohammadi.nasaapod.model.entity.Apod;
 import com.jawidmohammadi.nasaapod.viewmodel.MainViewModel;
 import edu.cnm.deepdive.android.DateTimePickerFragment;
 import edu.cnm.deepdive.android.DateTimePickerFragment.Mode;
-import edu.cnm.deepdive.android.DateTimePickerFragment.OnChangeListener;
 import java.util.Calendar;
 
 public class ImgaeFragment extends Fragment {

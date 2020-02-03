@@ -1,7 +1,6 @@
 package com.jawidmohammadi.nasaapod.service;
 
-import com.jawidmohammadi.nasaapod.model.Apod;
-import java.util.Date;
+import com.jawidmohammadi.nasaapod.model.entity.Apod;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

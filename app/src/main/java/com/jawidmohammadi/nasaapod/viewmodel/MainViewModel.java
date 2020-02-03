@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jawidmohammadi.nasaapod.BuildConfig;
-import com.jawidmohammadi.nasaapod.model.Apod;
+import com.jawidmohammadi.nasaapod.model.entity.Apod;
 import com.jawidmohammadi.nasaapod.service.ApodService;
 import java.io.IOException;
 import java.text.DateFormat;

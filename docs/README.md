@@ -13,4 +13,8 @@
 
 
 ### [User stories](./user-stories.md)
+
+### [Wireframe diagram](wireframing.md)
+
+###[Entity-relationship diagram](erd.md)
  
