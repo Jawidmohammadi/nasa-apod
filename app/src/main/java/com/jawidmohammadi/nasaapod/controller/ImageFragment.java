@@ -26,7 +26,7 @@ import edu.cnm.deepdive.android.DateTimePickerFragment;
 import edu.cnm.deepdive.android.DateTimePickerFragment.Mode;
 import java.util.Calendar;
 
-public class ImgaeFragment extends Fragment {
+public class ImageFragment extends Fragment {
 
   private static final String IMAGE_URL =
       "https://apod.nasa.gov/apod/image/2001/Comet67P_Rosetta_1024.jpg";

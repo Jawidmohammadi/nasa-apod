@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_image"
-        android:name="com.jawidmohammadi.nasaapod.controller.ImgaeFragment"
+        android:name="com.jawidmohammadi.nasaapod.controller.ImageFragment"
         android:label="@string/title_image"
         tools:layout="@layout/fragment_image" />
 

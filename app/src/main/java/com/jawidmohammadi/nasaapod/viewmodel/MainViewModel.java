@@ -10,10 +10,17 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jawidmohammadi.nasaapod.BuildConfig;
+import com.jawidmohammadi.nasaapod.model.dao.AccessDao;
+import com.jawidmohammadi.nasaapod.model.dao.ApodDao;
+import com.jawidmohammadi.nasaapod.model.entity.Access;
 import com.jawidmohammadi.nasaapod.model.entity.Apod;
+import com.jawidmohammadi.nasaapod.service.ApodDatabase;
 import com.jawidmohammadi.nasaapod.service.ApodService;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import retrofit2.Response;
@@ -24,14 +31,23 @@ public class MainViewModel extends AndroidViewModel {
 
   private Date apodDate;
   private MutableLiveData<Apod> apod;
-private MutableLiveData<Throwable> throwable;
+  private MutableLiveData<Throwable> throwable;
+  private ApodDatabase database;
+  private ApodService nasa;
 
   public MainViewModel(@NonNull Application application) {
     super(application);
+    database = ApodDatabase.getInstance();
+    nasa = ApodService.getInstance();
     apod = new MutableLiveData<>();
     throwable = new MutableLiveData<>();
-    setApodDate(new Date()); //TODO Investigate adjustment for Nasa Apod-relevant time zone.
-
+    Date today = new Date();
+    String formattedDate = ApodService.DATE_FORMATTER.format(today);
+    try {
+      setApodDate(ApodService.DATE_FORMATTER.parse(formattedDate)); // TODO Investigate adjustment for NASA APOD-relevant time zone.
+    } catch (ParseException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public LiveData<Apod> getApod() {
@@ -42,41 +58,43 @@ private MutableLiveData<Throwable> throwable;
     return throwable;
   }
 
-  public void setApodDate(Date date){
-    apodDate = date;
-    new Retriever().start();
+  public void setApodDate(Date date) {
+    ApodDao dao = database.getApodDao();
+    dao.select(date)
+        .subscribeOn(Schedulers.io())
+        .subscribe(
+            (apod) -> {
+              this.apod.postValue(apod);
+              insertAccess(apod);
+
+            },
+            (throwable) -> this.throwable.postValue(throwable),
+            () -> nasa.get(BuildConfig.API_KEY, ApodService.DATE_FORMATTER.format(date))
+              .subscribeOn(Schedulers.io())
+              .subscribe(
+
+                  (apod) -> dao.insert(apod)
+                    .unsubscribeOn(Schedulers.io())
+                      .subscribe(
+                          (id) -> {
+                            apod.setId(id);
+                            this.apod.postValue(apod);
+                            insertAccess(apod);
+                          },
+                          (throwable) -> this.throwable.postValue(throwable)
+                          ),
+                  (throwable) -> this.throwable.postValue(throwable)
+              )
+        );
   }
-  private class Retriever extends Thread {
 
-
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
-
-    @Override
-    public void run() {
-      @SuppressLint("SimpleDateFormat") DateFormat format = new SimpleDateFormat(DATE_FORMAT);
-      @SuppressLint("SimpleDateFormat") String formattedDate = format.format(apodDate);
-      Gson gson = new GsonBuilder()
-          .excludeFieldsWithoutExposeAnnotation()
-          .setDateFormat("yyyy-MM-dd")
-          .create();
-      Retrofit retrofit = new Retrofit.Builder()
-          .baseUrl(BuildConfig.BASE_URL)
-          .addConverterFactory(GsonConverterFactory.create(gson))
-          .build();
-      ApodService service = retrofit.create(ApodService.class);
-      try {
-        Response<Apod> response = service.get(BuildConfig.API_KEY, formattedDate).execute();
-        if (response.isSuccessful()){
-          Apod apod = response.body();
-          MainViewModel.this.apod.postValue(apod);
-        } else {
-          throw new RuntimeException(response.message());
-        }
-      } catch (IOException | RuntimeException e) {
-        Log.e("ApodService", e.getMessage(), e);
-        throwable.postValue(e);
-
-      }
-    }
+  private void insertAccess(Apod apod) {
+    AccessDao accessDao = database.getAccessDao();
+    Access access = new Access();
+    access.setApodId(apod.getId());
+    accessDao.insert(access)
+        .subscribeOn(Schedulers.io())
+        .subscribe(/*TODO Handle error result */);
   }
+
 }

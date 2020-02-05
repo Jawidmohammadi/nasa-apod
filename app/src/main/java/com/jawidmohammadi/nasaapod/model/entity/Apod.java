@@ -1,10 +1,25 @@
-package com.jawidmohammadi.nasaapod.model;
+package com.jawidmohammadi.nasaapod.model.entity;
 
+import androidx.annotation.BinderThread;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
+@Entity(
+    indices = @Index(value = "date", unique = true)
+)
 public class Apod {
+
+  @ColumnInfo(name = "apod_id")
+  @PrimaryKey (autoGenerate = true)
+  private long id;
+@NonNull
 @Expose
   private Date date;
 @Expose
@@ -14,17 +29,29 @@ public class Apod {
   private String description;
 @Expose
   private String copyright;
+@ColumnInfo(name="media_type")
 @Expose
 @SerializedName("media_type)")
   private String mediaType;
+@Ignore
 @Expose
 @SerializedName("service_version")
   private String serviceVersion;
 @Expose
   private String url;
+
+@ColumnInfo(name = "hd_url")
 @Expose
 @SerializedName("hdurl")
   private String hdUrl;
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
 
   public Date getDate() {
     return date;

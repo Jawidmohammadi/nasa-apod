@@ -1,0 +1,138 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "1275f64cd37ff68d9be6af09a583655f",
+    "entities": [
+      {
+        "tableName": "Apod",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`apod_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date` INTEGER NOT NULL, `title` TEXT, `description` TEXT, `copyright` TEXT, `media_type` TEXT, `url` TEXT, `hd_url` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "apod_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "copyright",
+            "columnName": "copyright",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mediaType",
+            "columnName": "media_type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "hdUrl",
+            "columnName": "hd_url",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "apod_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Apod_date",
+            "unique": true,
+            "columnNames": [
+              "date"
+            ],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Apod_date` ON `${TABLE_NAME}` (`date`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "Access",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`access_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `apod_id` INTEGER NOT NULL, `timestap` INTEGER NOT NULL, FOREIGN KEY(`apod_id`) REFERENCES `Apod`(`apod_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "access_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apodId",
+            "columnName": "apod_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestap",
+            "columnName": "timestap",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "access_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Access_apod_id",
+            "unique": false,
+            "columnNames": [
+              "apod_id"
+            ],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Access_apod_id` ON `${TABLE_NAME}` (`apod_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Apod",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "apod_id"
+            ],
+            "referencedColumns": [
+              "apod_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1275f64cd37ff68d9be6af09a583655f')"
+    ]
+  }
+}
